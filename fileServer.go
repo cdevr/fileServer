@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/user"
+	"replacement/user"
 	"path/filepath"
 	"strings"
 	"syscall"
