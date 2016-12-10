@@ -7,9 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
-	"replacement/user"
 	"path/filepath"
+	"replacement/user"
 	"strings"
 	"syscall"
 	"time"
@@ -22,6 +23,19 @@ var (
 
 var (
 	before = `<html>
+<head>
+  <style>
+    table{
+      width: 100%;
+    }
+    table td{
+      white-space: nowrap;
+    }
+    table td:last-child{
+      width:100%;
+    }
+  </style>
+</head>
 <body>
     <table id="fileTable">
     </table>
@@ -89,21 +103,25 @@ var (
             return fn
         }
 
-		function filePath(f) {
-			if (f.name == "..") return "..";
+        function date2Str(d) {
+          return d.getFullYear()  + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+        }
 
-			path = window.location.pathname;
-			if (path == "/") return f;
-					
-			return path + "/" + f;
-		}
-		
+        function filePath(f) {
+          if (f.name == "..") return "..";
+
+          path = window.location.pathname;
+          if (path == "/") return f;
+            
+          return path + "/" + f;
+        }
+    
         function fileToHTMLTR(f) {
             return "<tr><td>" + f.permissions + "</td><td>" 
                 + f.owner + "</td><td>"
                 + f.group + "</td><td>"
                 + humanizeSize(f.size) + "</td><td>"
-                + f.date + "</td><td>"
+                + date2Str(f.date) + "</td><td>"
                 + "<a href=\"" + filePath(f.name) + "\">" + f.name + "</a>" + "</td></tr>"; 
         }
 
@@ -138,7 +156,7 @@ var (
         }
         
         fillTable();
-		document.title = window.location.pathname;
+    document.title = window.location.pathname;
     </script>
 </body>
 </html>`
@@ -197,6 +215,10 @@ func (d *DirLister) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if uri == "" {
 		uri = "."
 	}
+	uri, err := url.QueryUnescape(uri)
+	if err != nil {
+		log.Printf("error unescaping %q: %v", uri, err)
+	}
 	log.Printf("uri %q requested", uri)
 
 	f, err := os.Open(uri)
@@ -237,6 +259,8 @@ func (d *DirLister) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	flag.Parse()
+
 	http.Handle("/", NewDirLister("."))
 	log.Printf("Starting serving on port %d", *port)
 
