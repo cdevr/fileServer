@@ -61,17 +61,17 @@ var (
 
         // Make sizes human readable.
         function humanizeSize(size) {
-            if (size > 2**40) {
-                return (size / 2**40).toFixed(1) + "T";
+            if (size > Math.pow(2, 40)) {
+                return (size / Math.pow(2, 40)).toFixed(1) + "T";
             }
-            if (size > 2**30) {
-                return (size / 2**30).toFixed(1) + "G";
+            if (size > Math.pow(2,30)) {
+                return (size / Math.pow(2, 30)).toFixed(1) + "G";
             }
-            if (size > 2**20) {
-                return (size / 2**20).toFixed(1) + "M";
+            if (size > Math.pow(2, 20)) {
+                return (size / Math.pow(2, 20)).toFixed(1) + "M";
             }
-            if (size > 2**10) {
-                return (size / 2**10).toFixed(1) + "K";
+            if (size > Math.pow(2, 10)) {
+                return (size / Math.pow(2, 10)).toFixed(1) + "K";
             }
             return "" + size;
         }
@@ -99,7 +99,6 @@ var (
             if (invert) {
                 fn = invertSort(fn);
             }
-            console.log("sorting by" + fn)
             return fn
         }
 
@@ -149,7 +148,6 @@ var (
         };
 
         function changeSort(to) {
-            console.log("changeSort " + to)
             if (sortKey == to) sortInvert = !sortInvert;
             sortKey = to;
             fillTable();
