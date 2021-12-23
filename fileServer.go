@@ -252,6 +252,7 @@ func (d *DirLister) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		fmt.Fprint(w, after)
 	} else {
+		req.URL.Path = uri
 		d.fs.ServeHTTP(w, req)
 	}
 }
