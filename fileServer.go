@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/user"
 	"path/filepath"
-	"replacement/user"
 	"strings"
 	"syscall"
 	"time"
@@ -121,7 +121,7 @@ var (
                 + f.group + "</td><td>"
                 + humanizeSize(f.size) + "</td><td>"
                 + date2Str(f.date) + "</td><td>"
-                + "<a href=\"" + filePath(f.name) + "\">" + f.name + "</a>" + "</td></tr>"; 
+                + "<a href=\"" + filePath(f.encodedName) + "\">" + f.name + "</a>" + "</td></tr>"; 
         }
 
         function fillTable() {
@@ -187,7 +187,7 @@ func writeFileDotDotDataJSON(w io.Writer, path string) {
 		group = &user.Group{}
 	}
 
-	fmt.Fprintf(w, "{name: \"..\",permissions: %q,owner: %q,group: %q,size: %d,date: %s},\n",
+	fmt.Fprintf(w, "{name: \"..\", encodedName: \"..\", permissions: %q, owner: %q, group: %q, size: %d, date: %s},\n",
 		f.Mode(), owner.Username, group.Name, f.Size(), encodeTime(f.ModTime()))
 }
 
@@ -201,8 +201,8 @@ func writeFileDataJSON(w io.Writer, f os.FileInfo) {
 		group = &user.Group{}
 	}
 
-	fmt.Fprintf(w, "{name: %q,permissions: %q,owner: %q,group: %q,size: %d,date: %s},\n",
-		f.Name(), f.Mode(), owner.Username, group.Name, f.Size(), encodeTime(f.ModTime()))
+	fmt.Fprintf(w, "{name: %q, encodedName: %q, permissions: %q, owner: %q, group: %q, size: %d, date: %s},\n",
+		f.Name(), url.QueryEscape(f.Name()), f.Mode(), owner.Username, group.Name, f.Size(), encodeTime(f.ModTime()))
 }
 
 func (d *DirLister) ServeHTTP(w http.ResponseWriter, req *http.Request) {
