@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	port     = flag.Int("port", 8080, "port to start server on.")
+	port     = flag.Int("port", 8000, "port to start server on.")
 	password = flag.String("password", "", "password to use, if unset no password")
 )
 
